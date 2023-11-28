@@ -9,6 +9,9 @@ from .pydentic_modules import (
     SubcatergoryItem,
     SubcatergoryUpdate,
     SubcatergoryDelete,
+    BrandItem,
+    BrandUpdate,
+    BrandDelete
 )
 from fastapi_login import LoginManager
 from slugify import slugify
@@ -187,3 +190,35 @@ async def put_subcatergory(
 async def delete_subcatergory(data:SubcatergoryDelete):
     data = await Subcategory.filter(id=data.id).delete()
     return data
+
+@router.post("/brand/")
+async def create_brand(data:BrandItem):
+    if await Brand.exists(brand_name=data.brand_name):
+         return {"status": False, "message": "brand already exists."}
+    else:
+        brand_obj=await Brand.create(brand_name=data.brand_name)
+        return brand_obj
+    
+@router.get("/brand/")
+async def get_brand():
+    brand_obj = await Brand.filter(is_active=True)
+    return brand_obj
+
+@router.put("/brand/")
+async def put_brand(data: BrandUpdate):
+    if await Brand.exists(id=data.id):
+        brand_obj = await Brand.filter(id=data.id).update(
+           brand_name = data.brand_name
+        )
+        return brand_obj 
+
+
+@router.delete("/brand/")
+async def delete_Brand(data: BrandDelete):
+    data = await Brand.filter(id=data.id).delete()
+    return data
+
+
+# @router.post("/product/")
+# async def create_product():
+    
